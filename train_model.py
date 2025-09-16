@@ -1,13 +1,16 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 from xgboost import XGBClassifier
 import mlflow
 import mlflow.xgboost
 import mlflow.models
 import matplotlib.pyplot as plt
 from xgboost import plot_importance
+
+# Could store MLflow logs into a storage service such as s3 
+#mlflow.set_tracking_uri("s3://my-bucket/mlflow")
 
 # Load only the relevant columns
 columns_to_use = ['Age', 'Sex', 'Pclass', 'Survived']
@@ -22,6 +25,9 @@ train_df['Sex'] = train_df['Sex'].map({'male': 0, 'female': 1})
 # Features and target
 X = train_df.drop('Survived', axis=1)
 y = train_df['Survived']
+
+# I will use the train csv to get a train / test split, since the test data is not labelled
+# This is fine since this project is only for practise purposes
 
 # Split train/test
 X_train, X_val, y_train, y_val = train_test_split(
@@ -52,11 +58,19 @@ with mlflow.start_run():
 
     # Evaluate
     acc = accuracy_score(y_val, y_pred)
+    f1 = f1_score(y_val, y_pred)
     print(f"Validation Accuracy: {acc:.4f}")
-
     # Log parameters, metrics, and model
     mlflow.log_params(params)
-    mlflow.log_metric("accuracy", acc)
+    mlflow.log_metric("Accuracy", acc)
+    mlflow.log_metric("F1-Score", f1)
+
+    fig, ax = plt.subplots()
+    plot_importance(model, ax=ax)
+    plt.tight_layout()
+    plt.savefig("feature_importance.png")
+    mlflow.log_artifact("feature_importance.png")
+
     # An example row from the dataset
     input_example = X_train.iloc[:1]
     mlflow.xgboost.log_model(model,  name="model",
