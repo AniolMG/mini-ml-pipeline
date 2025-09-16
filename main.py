@@ -1,0 +1,31 @@
+from fastapi import FastAPI
+import mlflow.pyfunc
+import pandas as pd
+from pydantic import BaseModel
+import os
+
+# Define the input schema
+class TitanicInput(BaseModel):
+    Age: float
+    Sex: int  # 0=male, 1=female
+    Pclass: int
+
+
+# Load MLflow model
+run_id = "dfff0654e66449c48b292c1490e6f5aa"
+model_uri = "runs:/" + run_id + "/model"
+
+deps = mlflow.pyfunc.get_model_dependencies(model_uri)
+print("Dependencies:", deps)
+
+model = mlflow.pyfunc.load_model(model_uri)
+
+app = FastAPI(title="Titanic Survival Prediction API")
+
+@app.post("/predict")
+def predict(data: TitanicInput):
+    # Convert input to DataFrame
+    df = pd.DataFrame([data.dict()])
+    # Make prediction
+    pred = model.predict(df)
+    return {"prediction": int(pred[0])}
