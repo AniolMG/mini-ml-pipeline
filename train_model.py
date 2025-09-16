@@ -1,7 +1,8 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+import seaborn as sns
 from xgboost import XGBClassifier
 import mlflow
 import mlflow.xgboost
@@ -60,6 +61,25 @@ with mlflow.start_run():
     acc = accuracy_score(y_val, y_pred)
     f1 = f1_score(y_val, y_pred)
     print(f"Validation Accuracy: {acc:.4f}")
+    
+    # Compute confusion matrix
+    cm = confusion_matrix(y_val, y_pred)
+
+    # Plot confusion matrix
+    fig_cm, ax_cm = plt.subplots()
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax_cm)
+    ax_cm.set_xlabel("Predicted")
+    ax_cm.set_ylabel("Actual")
+    ax_cm.set_title("Confusion Matrix")
+    plt.tight_layout()
+
+    # Save and log as MLflow artifact
+    plt.savefig("confusion_matrix.png")
+    mlflow.log_artifact("confusion_matrix.png")
+    plt.close(fig_cm)  # Close figure to free memory
+
+
+
     # Log parameters, metrics, and model
     mlflow.log_params(params)
     mlflow.log_metric("Accuracy", acc)
@@ -70,7 +90,8 @@ with mlflow.start_run():
     plt.tight_layout()
     plt.savefig("feature_importance.png")
     mlflow.log_artifact("feature_importance.png")
-
+    plt.close(fig)
+    
     # An example row from the dataset
     input_example = X_train.iloc[:1]
     mlflow.xgboost.log_model(model,  name="model",
