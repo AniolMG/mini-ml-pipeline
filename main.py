@@ -12,8 +12,11 @@ class TitanicInput(BaseModel):
 
 
 # Load MLflow model
-run_id = "dfff0654e66449c48b292c1490e6f5aa"
-model_uri = "runs:/" + run_id + "/model"
+#run_id = "a4a9b5b7491347928b96d3acaafdfd4c" #dfff0654e66449c48b292c1490e6f5aa"
+#model_uri = "runs:/" + run_id + "/model"
+
+run_id = "0f4d4b43e273443e96cab94c846530b2"
+model_uri = f"saved_model/{run_id}"
 
 deps = mlflow.pyfunc.get_model_dependencies(model_uri)
 print("Dependencies:", deps)

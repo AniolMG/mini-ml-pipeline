@@ -38,7 +38,8 @@ X_train, X_val, y_train, y_val = train_test_split(
 # MLflow experiment tracking
 mlflow.set_experiment("titanic_xgboost")
 
-with mlflow.start_run():
+with mlflow.start_run() as run:
+    run_id = run.info.run_id
     # Define model
     params = {
         "n_estimators": 200,
@@ -97,3 +98,10 @@ with mlflow.start_run():
     mlflow.xgboost.log_model(model,  name="model",
                             input_example=input_example,
                             signature=mlflow.models.infer_signature(X_train, y_train))
+    #mlflow.xgboost.save_model(model, path="saved_model")
+    save_path = f"saved_model/{run_id}"
+    mlflow.xgboost.save_model(model, path=save_path,
+               input_example=X_train.iloc[:1],
+               signature=mlflow.models.infer_signature(X_train, y_train))
+    
+    print(f"Saved model to: {save_path}")
