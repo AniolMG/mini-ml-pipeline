@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the specific saved model folder into the container
-COPY saved_model/ ./saved_model/
+# COPY saved_model/ ./saved_model/ # I will use volumes instead
 
 # Copy FastAPI app
 COPY main.py .

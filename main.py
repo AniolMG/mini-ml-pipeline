@@ -16,12 +16,14 @@ class TitanicInput(BaseModel):
 #model_uri = "runs:/" + run_id + "/model"
 
 run_id = "0f4d4b43e273443e96cab94c846530b2"
-model_uri = f"saved_model/{run_id}"
+model_uri = f"./saved_model/{run_id}"
 
 deps = mlflow.pyfunc.get_model_dependencies(model_uri)
 print("Dependencies:", deps)
 
 model = mlflow.pyfunc.load_model(model_uri)
+#model = mlflow.pyfunc.load_model("/app/" + model_uri)
+#model = mlflow.pyfunc.load_model("./saved_model/0f4d4b43e273443e96cab94c846530b2")
 
 app = FastAPI(title="Titanic Survival Prediction API")
 
