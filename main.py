@@ -2,26 +2,34 @@ from fastapi import FastAPI
 import mlflow.pyfunc
 import pandas as pd
 from pydantic import BaseModel
-import os
 
-# Define the input schema
+# -------------------------------
+# Define input schema
+# -------------------------------
 class TitanicInput(BaseModel):
     Age: float
     Sex: int  # 0=male, 1=female
     Pclass: int
 
+# -------------------------------
+# Load MLflow model from Model Registry
+# -------------------------------
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 
-# Load MLflow model
+REGISTERED_MODEL_NAME = "TitanicModel"  # Name in Model Registry
+MODEL_STAGE = "Staging"              # Can also be "Staging"
 
-run_id = os.getenv("RUN_ID", "default_run_id")
-#run_id = "0f4d4b43e273443e96cab94c846530b2"
-model_uri = f"./saved_model/{run_id}"
+# MLflow Model Registry URI format: models:/<model_name>/<stage_or_version>
+model_uri = f"models:/{REGISTERED_MODEL_NAME}/{MODEL_STAGE}"
+model = mlflow.pyfunc.load_model(model_uri)
 
+# Print dependencies for debugging
 deps = mlflow.pyfunc.get_model_dependencies(model_uri)
 print("Dependencies:", deps)
 
-model = mlflow.pyfunc.load_model(model_uri)
-
+# -------------------------------
+# Start FastAPI app
+# -------------------------------
 app = FastAPI(title="Titanic Survival Prediction API")
 
 @app.post("/predict")
