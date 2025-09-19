@@ -10,9 +10,6 @@ import mlflow.models
 import matplotlib.pyplot as plt
 from xgboost import plot_importance
 
-# Could store MLflow logs into a storage service such as s3 
-#mlflow.set_tracking_uri("s3://my-bucket/mlflow")
-
 # Load only the relevant columns
 columns_to_use = ['Age', 'Sex', 'Pclass', 'Survived']
 train_df = pd.read_csv("data/titanic_train.csv", usecols=columns_to_use)
