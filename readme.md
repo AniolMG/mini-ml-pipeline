@@ -76,8 +76,8 @@ So, let's use AWS S3 to store the artifacts.
 ---
 
 To set everything up, we'll need an AWS account. There, we will need to: 
-- Create an S3 bucket, which I've called "titanic-ml-artifacts"
-- Create an IAM user, which I've called "titanic-mlflow-user"
+- Create an S3 bucket, which I've called "titanic-ml-artifacts".
+- Create an IAM user, which I've called "titanic-mlflow-user".
 - Attach a policy to the IAM user. I've used a basic policy to ONLY allow access to the "titanic-ml-artifacts" bucket:
 ```json
 {
@@ -99,7 +99,7 @@ To set everything up, we'll need an AWS account. There, we will need to:
     ]
 }
 ```
-- Have AWS CLI installed in our system
+- Have AWS CLI installed in our system.
 - Get the Access Key ID and Secret Access Key for the IAM user.
 - Run `aws configure` and input the Access Key ID and Secret Acess Key.
 
