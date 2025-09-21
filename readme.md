@@ -30,12 +30,12 @@ Using virtual environments is recommended.
 
 So first we should do some Exploratory Data Analysis (EDA). You can see my full EDA in the [jupyter notebook](titanic_EDA.ipynb). This is only for completition, since it's not the main focus of this project.
 
-Then I trained a very simple XGBoost model, using some of the knowledge obtained in the EDA as guidance. You can see it in my [training code](train_model.py). Again, the specific model and its results are not the focus of this project.
+Then I trained a very simple XGBoost model, using some of the knowledge obtained in the EDA as guidance. You can see it in my [training code](train_model.py). Again, the specific model and its results are not the focus of this project. Keep in mind this won't work until we run the MLflow server since the script uses it. If you want, you can comment the ``mlflow.set_tracking_uri`` and ``set_experiment`` lines to see that the training script works.
 
 I used MLflow to track experiments and later serve them. 
 For now, with ``mlflow ui`` we can see a simple local view of our models.
 
-I created a [main.py](main.py) file to run a FastAPI local server that allowed me to use the MLflow models with api calls with ``uvicorn main:app --reload``.
+I created a [main.py](main.py) file to run a FastAPI local server that allowed me to use the MLflow models with api calls with ``uvicorn main:app --reload``. HOWEVER, this won't work, again, because it's expecting MLflow server to be set up correctly. Refer to the  [**NoMLFlowApproach branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/NoMLFlowServerApproach) if you want a simpler set up.
 
 ---
 
@@ -48,13 +48,13 @@ CREATE DATABASE mlflow_db;
 CREATE DATABASE
 ````
 
-And optionally: 
+And: 
 ````
 CREATE USER mlflow_user WITH PASSWORD 'mlflow_pass'; 
 CREATE ROLE GRANT ALL PRIVILEGES ON DATABASE mlflow_db TO mlflow_user;
 ````
 
-Then, the start the MLflow server with: 
+Then, the start the MLflow server with (change any parameter as needed): 
 ````
 mlflow server --backend-store-uri postgresql://mlflow_user:mlflow_pass@localhost:5432/mlflow_db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000 
 ````
@@ -65,13 +65,13 @@ Meanwhile, the artifacts (models, plots...) will be stored locally. An object st
 
 ---
 
-In the main.py file, after adding the ``mlflow.set_tracking_uri("http://127.0.0.1:5000")`` line, we don't have to rely on run IDs, and we can load the model from the MLflow Model Registry, using a "path" like ``"models:/{REGISTERED_MODEL_NAME}/{MODEL_STAGE}"``.
+In the main.py file, after adding the ``mlflow.set_tracking_uri("http://127.0.0.1:5000")`` line, we don't have to rely on run IDs, and we can load the model from the MLflow Model Registry, using a "path" like ``"models:/{REGISTERED_MODEL_NAME}/{MODEL_STAGE}"``. We simply have to use MLflow interface to register a model and then put it into Staging stage (could also be production, but you will have to edit main.py).
 
 Again, this can be tested by running it locally with ``uvicorn main:app --reload``, and running ``pytest`` or any customized request like ``curl -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json" -d "{\"Age\":29,\"Sex\":1,\"Pclass\":3}"``.
 
 However, to run a container while still using postgreSQL, we will need a remote artifact storage, since postgreSQL stores the URI where the model is saved. The URI will always point to an absolute path in the local filesystem, which means that the container won't find it. We could bake the model inside the image or use volumes, but that would defeat the purpose of using MLflow + postgreSQL to automate the deployment.
 
-So, I will use AWS S3 to store the artifacts.
+So, let's use AWS S3 to store the artifacts.
 
 ---
 
@@ -103,7 +103,7 @@ To set everything up, we'll need an AWS account. There, we will need to:
 - Get the Access Key ID and Secret Access Key for the IAM user.
 - Run `aws configure` and input the Access Key ID and Secret Acess Key.
 
-Now that we have our credentials set up, we have to run MLflow server specifying that we want to store our artifacts (models, images...) in s3:
+Now that we have our credentials set up, we have to run MLflow server specifying that we want to store our artifacts (models, images...) in s3 (close previous mlflow server execution):
 
 ````
 mlflow server --backend-store-uri postgresql://mlflow_user:mlflow_pass@localhost:5432/mlflow_db --default-artifact-root s3://titanic-ml-artifacts --host 127.0.0.1 --port 5000
@@ -111,18 +111,18 @@ mlflow server --backend-store-uri postgresql://mlflow_user:mlflow_pass@localhost
 
 Also, make sure to set a new experiment name, in the training code with ``mlflow.set_experiment("titanic_s3")``, since MLflow will ignore the default-artifact-root if the experiment already had one. Make sure too that boto3 is installed (install with ``pip install boto3``).
 
-Now if we run the training code, the model (and any other artificat we try to log) will be stored in S3. 
+Now if we run the training code, the model (and any other artifiact we try to log) will be stored in S3. 
 
 If it worked, we can now use MLFlow to set the new model to Staging and run ``uvicorn main:app --reload`` to test that it works.
 
-If everything worked up until this point, we can proceed with the containerization. Remember to run ``pip freeze > requirements.txt`` beforehand.
+If everything worked up until this point, we can proceed with the containerization. Remember to run ``pip freeze > requirements.txt`` beforehand if you installed anything else.
 
 Then build the image with:
 ```
 docker build -t titanic-ml-api .
 ```
 
-And run the container with (change \<user> with your actual user):
+We will have to give the container the permissions to access S3, and also specify the docker port, model name, and model stage, so run it with (change \<user> with your actual user):
 
 ````
 docker run -p 8000:8000 -v "C:\Users\<user>\.aws:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000"  -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" titanic-ml-api
