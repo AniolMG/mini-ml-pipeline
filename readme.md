@@ -3,7 +3,7 @@
 ## Mini project – End-to-End ML Pipeline 
 ## Basic MLflow tracking + FastAPI + Docker 
 
-For a simpler approach without MLflow Server, refer to the  [**NoMLFlowApproach branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/NoMLFlowServerApproach).
+For a more complete approach using MLflow Server, PostgreSQL, FastAPI, Docker and AWS S3, refer to the  [**main branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/main).
 
 ---
 
