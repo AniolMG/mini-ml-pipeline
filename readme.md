@@ -22,7 +22,7 @@ Finally, also add:
 
 ---
 
-Install all dependencies in requirements.txt with ``pip install > requirements.txt`` beforehand if you want.
+Install all dependencies in requirements.txt with ``pip install -r requirements.txt`` beforehand if you want.
 
 Using virtual environments is recommended.
 
