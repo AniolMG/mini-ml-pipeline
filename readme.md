@@ -1,7 +1,7 @@
 # Author: Aniol Molero Grau
 
 ## Mini project – End-to-End ML Pipeline 
-## Basic MLflow tracking + Docker 
+## Basic MLflow tracking + FastAPI + Docker 
 
 For a simpler approach without MLflow Server, refer to the  [**NoMLFlowApproach branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/NoMLFlowServerApproach).
 
@@ -12,7 +12,8 @@ Dataset: Kaggle “Titanic”
 Steps: 
 - Clean & preprocess data. 
 - Train a simple ML model (XGBoost). 
-- Track experiments using MLflow. 
+- Track experiments using MLflow.
+- Run app using FastAPI
 - Containerize the FastAPI app using Docker. 
 
 ---
