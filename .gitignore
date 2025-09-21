@@ -7,3 +7,6 @@ mlruns/
 # Compiled Python files
 __pycache__/
 *.pyc
+
+# AWS credentials
+titanic-mlflow-user_accessKeys.csv
