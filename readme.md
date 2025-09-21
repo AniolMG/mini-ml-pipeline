@@ -1,4 +1,11 @@
-Mini project – End-to-End ML Pipeline 
+# Author: Aniol Molero Grau
+
+## Mini project – End-to-End ML Pipeline 
+## MLFlow Server + PostgreSQL + Docker + AWS S3 version. 
+
+For a simpler approach without MLflow Server, refer to the  [**NoMLFlowApproach branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/NoMLFlowServerApproach).
+
+---
 
 Dataset: Kaggle “Titanic” 
 
@@ -6,16 +13,18 @@ Steps:
 - Clean & preprocess data. 
 - Train a simple ML model (XGBoost). 
 - Track experiments using MLflow. 
-- Deploy locally via FastAPI. 
-- Containerize the FastAPI app using Docker. 
 
 Finally, also add:
 - MLflow server + PostgreSQL for versioning and tracking
+- Deploy locally via FastAPI. 
+- Containerize the FastAPI app using Docker. 
 - AWS S3 as a remote storage service for serving the model.
 
 ---
 
 Install all dependencies in requirements.txt with ``pip install > requirements.txt`` beforehand if you want.
+
+Using virtual environments is recommended.
 
 ---
 
@@ -23,11 +32,10 @@ So first we should do some Exploratory Data Analysis (EDA). You can see my full 
 
 Then I trained a very simple XGBoost model, using some of the knowledge obtained in the EDA as guidance. You can see it in my [training code](train_model.py). Again, the specific model and its results are not the focus of this project.
 
-
 I used MLflow to track experiments and later serve them. 
 For now, with ``mlflow ui`` we can see a simple local view of our models.
 
-I created a [main.py](main.py) file to run a FastAPI local server that allowed me to use de MLflow models with api calls.
+I created a [main.py](main.py) file to run a FastAPI local server that allowed me to use the MLflow models with api calls with ``uvicorn main:app --reload``.
 
 ---
 
