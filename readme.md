@@ -1,7 +1,7 @@
 # Author: Aniol Molero Grau
 
 ## Mini project – End-to-End ML Pipeline 
-## MLFlow Server + PostgreSQL + Docker + AWS S3 version. 
+## Basic MLflow tracking + Docker 
 
 For a simpler approach without MLflow Server, refer to the  [**NoMLFlowApproach branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/NoMLFlowServerApproach).
 
