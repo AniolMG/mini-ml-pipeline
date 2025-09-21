@@ -131,3 +131,68 @@ docker run -p 8000:8000 -v "C:\Users\<user>\.aws:/root/.aws:ro" -e MLFLOW_TRACKI
 And test again that everything works with pytest.
 
 If it works, we've built a full end-to-end pipeline in a hybrid environment that uses both our local system and cloud storage! 🎉🎉
+
+# How to fully remove MLflow + PostgreSQL experiments:
+
+First, delete the experiment using the MLflow UI. However, this won't "fully" delete it, and you won't be able to create a new experiment with the same name.
+
+So, we then have to remove it fully fom postgreSQL. To do that, go into pgAdmin 4, go into the mlflow_db database, look for the Query tool (Alt + Shift + Q by default) and paste and run these queries:
+
+````
+-- 1. Experiment-level children
+DELETE FROM experiment_tags 
+WHERE experiment_id IN (
+    SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+);
+
+DELETE FROM logged_model_params
+WHERE experiment_id IN (
+    SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+);
+
+DELETE FROM logged_model_tags
+WHERE experiment_id IN (
+    SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+);
+
+-- 2. Run-level children
+DELETE FROM params 
+WHERE run_uuid IN (
+    SELECT run_uuid FROM runs WHERE experiment_id IN (
+        SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+    )
+);
+
+DELETE FROM metrics 
+WHERE run_uuid IN (
+    SELECT run_uuid FROM runs WHERE experiment_id IN (
+        SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+    )
+);
+
+DELETE FROM latest_metrics 
+WHERE run_uuid IN (
+    SELECT run_uuid FROM runs WHERE experiment_id IN (
+        SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+    )
+);
+
+DELETE FROM tags 
+WHERE run_uuid IN (
+    SELECT run_uuid FROM runs WHERE experiment_id IN (
+        SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+    )
+);
+
+-- 3. Runs
+DELETE FROM runs 
+WHERE experiment_id IN (
+    SELECT experiment_id FROM experiments WHERE lifecycle_stage='deleted'
+);
+
+-- 4. Finally, experiments
+DELETE FROM experiments 
+WHERE lifecycle_stage='deleted';
+````
+
+After this, the experiment should have been cleanly removed! 🧹✨
