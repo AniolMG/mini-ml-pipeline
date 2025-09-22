@@ -39,7 +39,7 @@ I created a [main.py](main.py) file to run a FastAPI local server that allowed m
 
 ---
 
-# MLFlow Server + PostgreSQL + Docker + AWS S3 approach:
+# MLFlow Server + PostgreSQL + FastAPI + Docker + AWS S3 approach:
 
 I decided to use a local MLflow server + a local postgreSQL server to better version the models. After installing postgreSQL and needed libraries, run: 
 
