@@ -23,17 +23,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Build Docker image with caching
-      - name: Build Docker image with cache
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          push: false
-          tags: titanic-ml-api
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
+      # 2. Build Docker image
+      - name: Build Docker image
+        run: docker build -t titanic-ml-api .
 
       # 3. Run container in dummy mode
       - name: Run FastAPI container
