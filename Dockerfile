@@ -19,7 +19,7 @@ RUN set -e; \
 # COPY saved_model/ ./saved_model/ # I will use volumes instead
 
 # Copy FastAPI app
-COPY main.py .
+COPY src/main.py .
 
 # Expose FastAPI port
 EXPOSE 8000

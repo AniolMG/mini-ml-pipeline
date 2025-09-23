@@ -7,7 +7,7 @@ For a simpler approach without MLflow Server, refer to the  [**NoMLFlowApproach 
 
 ---
 
-Dataset: Kaggle “Titanic” 
+Dataset: Kaggle “Titanic” (https://www.kaggle.com/c/titanic/data)
 
 Steps: 
 - Clean & preprocess data. 
@@ -30,12 +30,12 @@ Using virtual environments is recommended.
 
 So first we should do some Exploratory Data Analysis (EDA). You can see my full EDA in the [jupyter notebook](titanic_EDA.ipynb). This is only for completition, since it's not the main focus of this project.
 
-Then I trained a very simple XGBoost model, using some of the knowledge obtained in the EDA as guidance. You can see it in my [training code](train_model.py). Again, the specific model and its results are not the focus of this project. Keep in mind this won't work until we run the MLflow server since the script uses it. If you want, you can comment the ``mlflow.set_tracking_uri`` and ``set_experiment`` lines to see that the training script works.
+Then I trained a very simple XGBoost model, using some of the knowledge obtained in the EDA as guidance. You can see it in my [training code](src/train_model.py). Again, the specific model and its results are not the focus of this project. Keep in mind this won't work until we run the MLflow server since the script uses it. If you want, you can comment the ``mlflow.set_tracking_uri`` and ``set_experiment`` lines to see that the training script works, or simply run the [training code without MLflow Server](src/train_model_without_mlflowserver.py).
 
 I used MLflow to track experiments and later serve them. 
 For now, with ``mlflow ui`` we can see a simple local view of our models.
 
-I created a [main.py](main.py) file to run a FastAPI local server that allowed me to use the MLflow models with api calls with ``uvicorn main:app --reload``. HOWEVER, this won't work, again, because it's expecting MLflow server to be set up correctly. Refer to the  [**NoMLFlowApproach branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/NoMLFlowServerApproach) if you want a simpler set up.
+I created a [main.py](src/main.py) file to run a FastAPI local server that allowed me to use the MLflow models with api calls with ``uvicorn main:app --reload``. HOWEVER, this won't work, again, because it's expecting MLflow server to be set up correctly. Refer to the  [**NoMLFlowApproach branch**](https://github.com/AniolMG/mini-ml-pipeline/tree/NoMLFlowServerApproach) if you want a simpler set up.
 
 ---
 

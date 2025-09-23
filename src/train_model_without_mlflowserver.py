@@ -15,7 +15,7 @@ from xgboost import plot_importance
 
 # Load only the relevant columns
 columns_to_use = ['Age', 'Sex', 'Pclass', 'Survived']
-train_df = pd.read_csv("data/titanic_train.csv", usecols=columns_to_use)
+train_df = pd.read_csv("../data/titanic_train.csv", usecols=columns_to_use)
 
 # Drop rows where Age is missing
 train_df = train_df.dropna(subset=['Age'])

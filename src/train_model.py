@@ -25,7 +25,7 @@ MODEL_NAME = "TitanicModel"  # Name in Model Registry
 # Load and preprocess data
 # -------------------------------
 columns_to_use = ['Age', 'Sex', 'Pclass', 'Survived']
-train_df = pd.read_csv("data/titanic_train.csv", usecols=columns_to_use)
+train_df = pd.read_csv("../data/titanic_train.csv", usecols=columns_to_use)
 train_df = train_df.dropna(subset=['Age'])
 train_df['Sex'] = train_df['Sex'].map({'male': 0, 'female': 1})
 
