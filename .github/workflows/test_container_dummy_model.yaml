@@ -1,0 +1,70 @@
+name: Test Container With Dummy Model
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'Dockerfile'
+      - 'requirements.txt'
+      - 'tests/**'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'Dockerfile'
+      - 'requirements.txt'
+      - 'tests/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Build Docker image with caching
+      - name: Build Docker image with cache
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: titanic-ml-api
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+
+      # 3. Run container in dummy mode
+      - name: Run FastAPI container
+        run: |
+          docker run -d -p 8000:8000 \
+            -e USE_DUMMY_MODEL=true \
+            --name titanic-ml-api titanic-ml-api
+          # Wait for FastAPI to be ready
+          for i in {1..10}; do
+            if curl -s http://127.0.0.1:8000/docs > /dev/null; then
+              echo "FastAPI is up!"
+              exit 0
+            fi
+            echo "Waiting for FastAPI..."
+            sleep 3
+          done
+          echo "FastAPI failed to start"
+          docker logs titanic-ml-api
+          exit 1
+
+      # 4. Install pytest and requests
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest requests
+
+      # 5. Run pytest against the running container
+      - name: Run tests
+        run: pytest
+
+      # 6. Stop container after tests (cleanup)
+      - name: Stop container
+        if: always()
+        run: docker stop titanic-ml-api
