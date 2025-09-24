@@ -1,0 +1,39 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]   # CI workflow must complete first
+    types:
+      - completed
+
+jobs:
+  build-and-push:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only run if CI succeeded
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Log in to GitHub Container Registry
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      # 3. Build Docker image
+      - name: Build Docker image
+        run: docker build -t ghcr.io/aniolmg/titanic-ml-api:latest .
+
+      # 4. Tag image with commit SHA
+      - name: Tag image
+        run: |
+          IMAGE_TAG=ghcr.io/aniolmg/titanic-ml-api:${{ github.sha }}
+          docker tag ghcr.io/aniolmg/titanic-ml-api:latest $IMAGE_TAG
+
+      # 5. Push images
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/aniolmg/titanic-ml-api:latest
+          docker push ghcr.io/aniolmg/titanic-ml-api:${{ github.sha }}

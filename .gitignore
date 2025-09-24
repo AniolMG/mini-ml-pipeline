@@ -10,3 +10,6 @@ __pycache__/
 
 # AWS credentials
 titanic-mlflow-user_accessKeys.csv
+
+# Github Secrets
+token_ghcr.txt
