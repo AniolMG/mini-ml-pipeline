@@ -13,6 +13,9 @@ jobs:
       ${{ github.event.workflow_run.conclusion == 'success' &&
           github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read      # allows checkout
+      packages: write     # allows publishing to GHCR
     steps:
       # 1. Checkout code
       - name: Checkout code
