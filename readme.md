@@ -122,13 +122,27 @@ Then build the image with:
 docker build -t titanic-ml-api .
 ```
 
+Alternatively, you can download my public image in GitHub Container Registry with:
+
+```
+docker pull ghcr.io/aniolmg/titanic-ml-api:419c6001d25773c251d1b0c40c38b6ea4ae02d21
+```
+
+419c6001d25773c251d1b0c40c38b6ea4ae02d21 is the last working tested image. You could also use ``docker pull ghcr.io/aniolmg/titanic-ml-api:latest`` to get the last version at the moment of pulling. 
+
 We will have to give the container the permissions to access S3, and also specify the docker port, model name, and model stage, so run it with (change \<user> with your actual user):
 
 ````
 docker run -p 8000:8000 -v "C:\Users\<user>\.aws:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000"  -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" titanic-ml-api
 ````
 
-And test again that everything works with pytest.
+If you downloaded my public image instead of building it yourself, simple replace the image name at the end. The complete command should look like this:
+
+````
+docker run -p 8000:8000 -v "C:\Users\<user>\.aws:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000"  -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" ghcr.io/aniolmg/titanic-ml-api
+````
+
+And test again that everything works with ``pytest``.
 
 If it works, we've built a full end-to-end pipeline in a hybrid environment that uses both our local system and cloud storage! 🎉🎉
 
