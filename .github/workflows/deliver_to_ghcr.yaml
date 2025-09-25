@@ -1,4 +1,4 @@
-name: CD
+name: CD (Continuous Delivery)
 
 on:
   workflow_run:
