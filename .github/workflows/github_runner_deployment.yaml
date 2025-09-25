@@ -30,3 +30,8 @@ jobs:
       - name: Run new container
         run: docker run -d --name titanic-api -p 8000:8000 -v "${{ vars.AWS_CREDENTIALS_PATH }}:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000" -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" ghcr.io/aniolmg/titanic-ml-api:latest
         shell: cmd
+
+      # 4. Run API tests
+      - name: Run API tests
+        run: python tests\test_api.py
+        shell: cmd
