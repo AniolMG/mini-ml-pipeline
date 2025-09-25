@@ -9,19 +9,17 @@ For a simpler approach without MLflow Server, refer to the  [**NoMLFlowApproach 
 
 Dataset: Kaggle “Titanic” (https://www.kaggle.com/c/titanic/data)
 
-Steps: 
-- Clean & preprocess data. 
-- Train a simple ML model (XGBoost). 
-- Track experiments using MLflow. 
+### Steps  
+- Clean & preprocess data.  
+- Train a simple ML model (XGBoost).  
+- Track experiments using **MLflow (no server)**.  
+- Set up **MLflow server + PostgreSQL** for versioning and tracking.  
+- Deploy locally via **FastAPI**.  
+- Containerize the FastAPI app using **Docker**.  
+- Use **AWS S3** as a remote storage service for serving the model.  
+- (Optional) Automate deployment with **CI/CD** using GitHub Actions + self-hosted runners.  
 
-Finally, also add:
-- MLflow server + PostgreSQL for versioning and tracking
-- Deploy locally via FastAPI. 
-- Containerize the FastAPI app using Docker. 
-- AWS S3 as a remote storage service for serving the model.
 
-Note that:
-- The repository also includes .yaml files in the [workflows](.github/workflows/) folder to automate the deployment process when pushing new code to the repository (CI/CD). If you want to reuse it to push Docker images, you will have to change some of the paths that point to my account.
 
 
 ---
@@ -148,8 +146,37 @@ docker run -p 8000:8000 -v "C:\Users\<user>\.aws:/root/.aws:ro" -e MLFLOW_TRACKI
 
 And test again that everything works with ``pytest``.
 
-If it works, we've built a full end-to-end pipeline in a hybrid environment that uses both our local system and cloud storage! 🎉🎉
+---
 
+## Optional CI/CD Automation:
+
+To automate the deployment process and implement a basic CI/CD workflow, we can use GitHub Actions with .yaml workflow files. Specifically, the deployment can be automated using GitHub self-hosted runners.
+
+If you want to reproduce this setup:
+
+- Set up your own GitHub repository and replace any references to my account with your GitHub username.
+
+- Configure GitHub Secrets and Variables:
+
+    - Go to your repo → Settings → Secrets and Variables → Actions
+
+    - For this project, you only need to set AWS_CREDENTIALS_PATH to point to your AWS credentials folder, e.g., C:\Users\<user>\.aws.
+
+- Install a local GitHub Runner:
+
+    - Go to your repo → Actions → Runners → Self-hosted runners
+
+    - Follow GitHub’s step-by-step guide to set it up.
+
+---
+If everything is set up correctly, you will have a full end-to-end pipeline running in a hybrid environment, combining your local system with cloud storage, and optionally automating CI/CD! 🎉
+---
+<br><br><br><br>
+<br><br><br><br>
+
+
+
+---
 # How to fully remove MLflow + PostgreSQL experiments:
 
 First, delete the experiment using the MLflow UI. However, this won't "fully" delete it, and you won't be able to create a new experiment with the same name.
