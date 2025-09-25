@@ -14,24 +14,28 @@ jobs:
           github.event.workflow_run.head_branch == 'main' }}
     runs-on: self-hosted
     steps:
-      # 1. Pull latest Docker image
+      # 1. Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Pull latest Docker image
       - name: Pull latest Docker image
         run: docker pull ghcr.io/aniolmg/titanic-ml-api:latest
         shell: cmd
 
-      # 2. Stop old container (if running)
+      # 3. Stop old container (if running)
       - name: Stop old container
         run: |
           docker stop titanic-api || exit 0
           docker rm titanic-api || exit 0
         shell: cmd
 
-      # 3. Run new container
+      # 4. Run new container
       - name: Run new container
         run: docker run -d --name titanic-api -p 8000:8000 -v "${{ vars.AWS_CREDENTIALS_PATH }}:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000" -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" ghcr.io/aniolmg/titanic-ml-api:latest
         shell: cmd
 
-      # 4. Run API tests inside virtual environment
+      # 5. Run API tests inside virtual environment
       - name: Run API tests
         run: |
           REM Create venv if it doesn't exist
@@ -40,9 +44,11 @@ jobs:
           )
           REM Activate venv
           call venv\Scripts\activate.bat
-          REM Upgrade pip and install dependencies
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          REM Run specific pytest script with verbose output
+          REM Upgrade pip and install dependencies (skip if requirements.txt missing)
+          if exist requirements.txt (
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+          )
+          REM Run the specific pytest script
           pytest tests/test_api.py
         shell: cmd
