@@ -33,5 +33,5 @@ jobs:
 
       # 4. Run API tests
       - name: Run API tests
-        run: python tests\test_api.py
+        run: pytest tests/test_api.py
         shell: cmd
