@@ -28,5 +28,5 @@ jobs:
 
       # 3. Run new container
       - name: Run new container
-        run: docker run -d --name titanic-api -p 8000:8000 -v "%AWS_CREDENTIALS_PATH%:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000" -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" ghcr.io/aniolmg/titanic-ml-api:latest
+        run: docker run -d --name titanic-api -p 8000:8000 -v "${{ vars.AWS_CREDENTIALS_PATH }}:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000" -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" ghcr.io/aniolmg/titanic-ml-api:latest
         shell: cmd
