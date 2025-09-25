@@ -31,7 +31,18 @@ jobs:
         run: docker run -d --name titanic-api -p 8000:8000 -v "${{ vars.AWS_CREDENTIALS_PATH }}:/root/.aws:ro" -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000" -e REGISTERED_MODEL_NAME="TitanicModel" -e MODEL_STAGE="Staging" ghcr.io/aniolmg/titanic-ml-api:latest
         shell: cmd
 
-      # 4. Run API tests
+      # 4. Run API tests inside virtual environment
       - name: Run API tests
-        run: pytest tests/test_api.py
+        run: |
+          REM Create venv if it doesn't exist
+          if not exist venv (
+            python -m venv venv
+          )
+          REM Activate venv
+          call venv\Scripts\activate.bat
+          REM Upgrade pip and install dependencies
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          REM Run specific pytest script with verbose output
+          pytest tests/test_api.py
         shell: cmd
