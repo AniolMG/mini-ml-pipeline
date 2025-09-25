@@ -20,6 +20,10 @@ Finally, also add:
 - Containerize the FastAPI app using Docker. 
 - AWS S3 as a remote storage service for serving the model.
 
+Note that:
+- The repository also includes .yaml files in the [workflows](.github/workflows/) folder to automate the deployment process when pushing new code to the repository (CI/CD). If you want to reuse it to push Docker images, you will have to change some of the paths that point to my account.
+
+
 ---
 
 Install all dependencies in requirements.txt with ``pip install -r requirements.txt`` beforehand if you want.
